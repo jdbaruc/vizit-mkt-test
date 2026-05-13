@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════════════════════════
    blog-data.js — shared article store (localStorage)
-   Used by Blog.html, Blog Article.html, and Blog CMS.html.
+   Used by blog.html, blog-article.html, and blog-cms.html.
 
    Public API: window.VizitBlog
      .list()                → all articles (incl. hidden / drafts)
