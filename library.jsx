@@ -16,14 +16,14 @@ const { useState: useStateLib, useMemo: useMemoLib } = React;
 // detail page users came from — clicking it navigates back to /collections.
 
 const COLLECTIONS = [
-  { id: 'c01', title: 'Test — shaving pillow lifestyle ss', category: 'Cell Phones & Accessories', thumb: 'lifestyle-woman', count: 24, isTest: true, route: '/collections' },
-  { id: 'c02', title: 'Claim Explorations',                category: 'Cell Phones & Accessories', thumb: 'bloom-cans',      count: 24 },
-  { id: 'c03', title: 'Claim Flow Visuals',                category: 'MP3 & MP4 Players',         thumb: 'claims-standards', count: 24 },
-  { id: 'c04', title: 'Before/After Clean Feel',           category: 'Digital Voice Recorders',   thumb: 'tube-purple',     count: 24 },
-  { id: 'c05', title: 'Bristle Detail Callouts',           category: 'Tabletop Synthesizers',     thumb: 'tube-untinted',   count: 24 },
-  { id: 'c06', title: 'Brush Head Variants',               category: 'Tabletop Synthesizers',     thumb: 'brush-kit',       count: 24 },
-  { id: 'c07', title: 'Pack shot v2 – Minimal Aesthetic',  category: 'Portable Bluetooth Speakers', thumb: 'milos-bag',     count: 24 },
-  { id: 'c08', title: 'Test — shaving pillow shots',       category: 'Cell Phones & Accessories', thumb: 'empty',           count: 0,  isTest: true, route: '/collections' },
+  { id: 'c01', title: 'Test — shaving pillow lifestyle ss', category: 'Shaving Gels',      cat_color: '#6941C6', thumb: 'lifestyle-woman', count: 24, isTest: true, route: '/collections' },
+  { id: 'c02', title: 'Claim Explorations',                category: 'Shaving Gels',      cat_color: '#6941C6', thumb: 'bloom-cans',      count: 24 },
+  { id: 'c03', title: 'Claim Flow Visuals',                category: 'Whitening Strips',  cat_color: '#B93815', thumb: 'claims-standards', count: 24 },
+  { id: 'c04', title: 'Before/After Clean Feel',           category: 'Shaving Gels',      cat_color: '#6941C6', thumb: 'tube-purple',     count: 24 },
+  { id: 'c05', title: 'Bristle Detail Callouts',           category: 'Toothbrushes',      cat_color: '#0B5CAD', thumb: 'tube-untinted',   count: 24 },
+  { id: 'c06', title: 'Brush Head Variants',               category: 'Toothbrushes',      cat_color: '#0B5CAD', thumb: 'brush-kit',       count: 24 },
+  { id: 'c07', title: 'Pack shot v2 – Minimal Aesthetic',  category: 'Pet supplies',      cat_color: '#C01048', thumb: 'milos-bag',       count: 24 },
+  { id: 'c08', title: 'Test — shaving pillow shots',       category: 'Shaving Gels',      cat_color: '#6941C6', thumb: 'empty',           count: 0,  isTest: true, route: '/collections' },
 ];
 
 /* ---------- Card thumbnails ---------------------------------------- */
@@ -162,7 +162,7 @@ const CollectionCard = ({ c, onOpen }) => (
       {c.title}
     </div>
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      <CategoryPill label={c.category} color={(window.categoryColor || (() => '#6941C6'))(c.category)} />
+      <CategoryPill label={c.category} color={c.cat_color} />
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-quaternary)' }}>
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3">
           <rect x="2" y="3" width="12" height="10"/><circle cx="6" cy="7" r="1"/><path d="m2 11 3-3 3 3 2-2 4 4"/>
@@ -277,6 +277,7 @@ const EmptyTab = ({ label }) => (
 const PRODUCT_PAGES = [
   { id: 'p01', thumb: 'pp-strips',   title: 'MySmile Teeth Whitening Strips 14 Treatments Kit, Hydroxyapatite-Infuse White Strips, Non-Sensitive Teeth Whitening with Soothing Natural Ingredients, Enamel-Safe, Residue-Free, N…', asin: 'B0C34GV9ZC', retailer: 'amazon', rscore: 41,  lscore: 45 },
   { id: 'p02', thumb: 'pp-brush-pink', title: 'MySmile DY156 Electric Toothbrush for Adults, Rechargeable Sonic Battery Toothbrush Portable with 3 Brush Heads, 2 Mins 5 Modes Smart Timer, 45000VPM, One Charge for 60…', asin: 'B0C34GV9ZC', retailer: 'walmart', rscore: 40,  lscore: 64 },
+  { id: 'p03', thumb: 'pp-paste-tube', title: 'MySmile Fluoride Free Toothpaste, Nano Hydroxyapatite Toothpaste for Sensitive Teeth, Strengthens Enamel, Remineralizes & Whitens Teeth, Freshens Breath for Adults, SLS Free,…', asin: 'B0C34GV9ZC', retailer: 'amazon', rscore: 60,  lscore: 85, selected: true },
   { id: 'p04', thumb: 'pp-led-kit',  title: 'MySmile Teeth Whitening Kit with LED Light, 10 Min Non-Sensitive Fast Teeth Whitener with 3 Carbamide Peroxide Whitening Gel, Helps to Remove Stains from Coffee, Smoking, Wine…', asin: 'B0C34GV9ZC', retailer: 'amazon', rscore: null, lscore: 56, processing: true },
   { id: 'p05', thumb: 'pp-box-green', title: 'MySmile 7 Treatments Prefilled Teeth Whitening Trays Kit with 12% Hydrogen Peroxide Whiter Gel for Sensitive Teeth, Fast-Result Vegan Teeth Whitener Tooth Stain Remover, Mi…', asin: 'B0C34GV9ZC', retailer: 'walmart', rscore: 40,  lscore: 81 },
   { id: 'p06', thumb: 'pp-op-z',     title: 'OP-Z portable sequencer, synthesizer, drum machine and visual controller with built-in microphone for sampling, effects and midi, iOS compatible and battery powered', asin: 'B0C34GV9ZC', retailer: 'amazon', rscore: 12,  lscore: 25 },
@@ -380,161 +381,18 @@ const RetailerGlyph = ({ retailer }) => {
   );
 };
 
-const FakeSelect = ({ label, options, value, onChange, multi = false }) => {
-  // When `options` are supplied, render a real dropdown. With `multi`, the
-  // dropdown becomes a checkbox-list whose `value` is an array of selected
-  // option names; the trigger compresses the selection summary the same way
-  // the Reporting FilterDropdown does.
-  const [open, setOpen] = React.useState(false);
-  const ref = React.useRef(null);
-  React.useEffect(() => {
-    if (!open) return;
-    const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
-    document.addEventListener('mousedown', onDoc);
-    return () => document.removeEventListener('mousedown', onDoc);
-  }, [open]);
-
-  const interactive = Array.isArray(options);
-  const arr = Array.isArray(value) ? value : [];
-  const hasSelection = multi ? arr.length > 0 : !!value;
-  const display = !interactive ? label
-    : multi
-      ? (arr.length === 0 ? label
-        : arr.length <= 2 ? arr.join(', ')
-        : `${arr.length} selected`)
-      : (value || label);
-
-  const toggle = (opt) => {
-    if (!onChange) return;
-    if (multi) {
-      onChange(arr.includes(opt) ? arr.filter(v => v !== opt) : [...arr, opt]);
-    } else {
-      onChange(opt);
-      setOpen(false);
-    }
-  };
-  const clear = () => onChange && onChange(multi ? [] : null);
-
-  return (
-    <div ref={ref} style={{ position: 'relative' }}>
-      <button
-        type="button"
-        onClick={interactive ? () => setOpen(o => !o) : undefined}
-        style={{
-          display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between',
-          width: '100%', height: 36, padding: '0 8px 0 12px', gap: 8,
-          background: '#fff', border: '1px solid var(--border-secondary)',
-          font: 'inherit', fontSize: 13,
-          color: hasSelection ? 'var(--text-primary)' : 'var(--text-secondary)',
-          cursor: 'pointer',
-        }}
-      >
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, textAlign: 'left' }}>{display}</span>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-          {hasSelection && (
-            <span
-              role="button"
-              tabIndex={0}
-              aria-label="Clear selection"
-              onClick={(e) => { e.stopPropagation(); clear(); }}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); clear(); } }}
-              style={{
-                display: 'inline-grid', placeItems: 'center',
-                width: 18, height: 18,
-                color: 'var(--text-quaternary)',
-                cursor: 'pointer',
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-secondary)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-quaternary)'; }}
-            >
-              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M3 3l6 6M9 3l-6 6"/></svg>
-            </span>
-          )}
-          <IconAt name="chevron-down.png" size={14} style={{ color: 'var(--text-quaternary)' }} />
-        </span>
-      </button>
-      {interactive && open && (
-        <div style={{
-          position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
-          background: '#fff',
-          border: '1px solid var(--border-secondary)',
-          boxShadow: 'var(--shadow-lg, 0 8px 24px rgba(0,0,0,0.10))',
-          zIndex: 50, padding: 4,
-          maxHeight: 360, overflowY: 'auto',
-          minWidth: 220,
-        }}>
-          {!multi && (
-            <button
-              type="button"
-              onClick={() => { onChange && onChange(null); setOpen(false); }}
-              style={{
-                display: 'flex', alignItems: 'center', width: '100%',
-                padding: '7px 10px', background: 'transparent', border: 0,
-                font: 'inherit', fontSize: 13,
-                color: value == null ? 'var(--text-brand-secondary)' : 'var(--text-secondary)',
-                cursor: 'pointer', textAlign: 'left',
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-            >{label}</button>
-          )}
-          {options.map((opt) => {
-            const isOn = multi ? arr.includes(opt) : opt === value;
-            return (
-              <button
-                key={opt}
-                type="button"
-                onClick={() => toggle(opt)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-                  padding: '7px 10px',
-                  background: (!multi && isOn) ? 'var(--brand-50)' : 'transparent',
-                  border: 0,
-                  font: 'inherit', fontSize: 13,
-                  color: (!multi && isOn) ? 'var(--text-brand-secondary)' : 'var(--text-primary)',
-                  cursor: 'pointer', textAlign: 'left',
-                }}
-                onMouseEnter={(e) => { if (!(!multi && isOn)) e.currentTarget.style.background = 'var(--bg-secondary)'; }}
-                onMouseLeave={(e) => { if (!(!multi && isOn)) e.currentTarget.style.background = 'transparent'; }}
-              >
-                {multi && (
-                  <span style={{
-                    width: 14, height: 14, flexShrink: 0,
-                    border: '1px solid var(--border-secondary)',
-                    background: isOn ? 'var(--brand-800)' : '#fff',
-                    display: 'grid', placeItems: 'center',
-                    borderRadius: 2,
-                  }}>
-                    {isOn && <svg width="9" height="9" viewBox="0 0 16 16" fill="none" stroke="#fff" strokeWidth="2.5"><path d="m3 8 3 3 7-7"/></svg>}
-                  </span>
-                )}
-                <span>{opt}</span>
-              </button>
-            );
-          })}
-          {multi && arr.length > 0 && (
-            <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '8px 10px 4px', marginTop: 4,
-              borderTop: '1px solid var(--border-tertiary)',
-            }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-quaternary)' }}>{arr.length} selected</span>
-              <button
-                type="button"
-                onClick={clear}
-                style={{
-                  background: 'transparent', border: 0, padding: '2px 6px',
-                  font: 'inherit', fontSize: 12, color: 'var(--text-brand-secondary)',
-                  cursor: 'pointer',
-                }}
-              >Clear</button>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
+const FakeSelect = ({ label }) => (
+  <button style={{
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between',
+    width: '100%', height: 36, padding: '0 12px',
+    background: '#fff', border: '1px solid var(--border-secondary)',
+    font: 'inherit', fontSize: 13, color: 'var(--text-secondary)',
+    cursor: 'pointer',
+  }}>
+    <span>{label}</span>
+    <IconAt name="chevron-down.png" size={14} style={{ color: 'var(--text-quaternary)' }} />
+  </button>
+);
 
 const SearchBox = () => (
   <div style={{ position: 'relative' }}>
@@ -564,8 +422,6 @@ const NewProductPageButton = () => (
 const ProductPagesTab = ({ onNavigate }) => {
   const [hoverId, setHoverId] = React.useState(null);
   const [selectedId, setSelectedId] = React.useState(PRODUCT_PAGES.find(p => p.selected)?.id || null);
-  const [brands, setBrands] = React.useState([]);
-  const [cats, setCats] = React.useState([]);
   const openProductPage = (p) => {
     setSelectedId(p.id);
     onNavigate && onNavigate(`/library/product-pages/${p.id}`);
@@ -580,8 +436,8 @@ const ProductPagesTab = ({ onNavigate }) => {
         gap: 12,
         padding: '18px 24px 14px',
       }}>
-        <FakeSelect label="All categories" options={window.CATEGORIES || []} value={cats} onChange={setCats} multi />
-        <FakeSelect label="All brands" options={window.BRANDS || []} value={brands} onChange={setBrands} multi />
+        <FakeSelect label="All categories" />
+        <FakeSelect label="All brands" />
         <FakeSelect label="All scores" />
         <SearchBox />
       </div>
@@ -638,12 +494,11 @@ const ProductPagesTab = ({ onNavigate }) => {
                 alignItems: 'center',
                 padding: '14px',
                 cursor: 'pointer',
-                background: 'transparent',
+                background: hovered && !selected ? 'var(--bg-secondary)' : 'transparent',
                 outline: selected ? '1px solid var(--border-primary)' : 'none',
                 outlineOffset: -1,
-                boxShadow: hovered && !selected ? 'inset 0 0 0 1.5px var(--text-primary)' : 'inset 0 0 0 0 var(--text-primary)',
                 borderBottom: selected ? 0 : '1px solid var(--border-tertiary)',
-                transition: 'box-shadow .12s',
+                transition: 'background .12s',
               }}
             >
               {/* Product */}
@@ -682,8 +537,8 @@ const ProductPagesTab = ({ onNavigate }) => {
                 <ScoreStickerSm value={p.lscore} />
               </div>
 
-              {/* Row actions — appear on hover (and stay on selected row) */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6, opacity: (hovered || selected) ? 1 : 0, transition: 'opacity .12s' }}>
+              {/* Row actions — only visible on the selected row */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6, opacity: selected ? 1 : 0, transition: 'opacity .12s' }}>
                 <button className="btn btn--ghost btn--icon btn--sm" aria-label="Swap" onClick={(e) => e.stopPropagation()}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 6h8l-2-2M13 10H5l2 2"/></svg>
                 </button>

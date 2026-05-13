@@ -31,7 +31,7 @@ const StrengthBolts = ({ value = 0, total = 4 }) => (
 // Single tile composing label + bolts + value + denom/delta. Uses the
 // `score-metric-cell` CSS classes from components.css.
 const ScoreMetricCell = ({
-  label, info = true, tooltip, strength = 0, totalStrength = 4,
+  label, info = true, strength = 0, totalStrength = 4,
   tier = 'na', value, denom, delta,
   state = 'default', // 'default' | 'hover' | 'disabled'
   size = 'md',
@@ -48,30 +48,12 @@ const ScoreMetricCell = ({
         <span className="score-metric-cell__label">
           {label}
           {info && (
-            <span
-              className={`score-metric-cell__label-info${tooltip ? ' has-tooltip' : ''}`}
-              tabIndex={tooltip ? 0 : -1}
-              aria-label={tooltip ? 'More info' : undefined}
-              aria-hidden={tooltip ? undefined : true}>
+            <span className="score-metric-cell__label-info" aria-hidden>
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                 <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1" fill="none" />
                 <circle cx="6" cy="3.5" r="0.6" fill="currentColor" />
                 <path d="M6 5.5v3.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
               </svg>
-              {tooltip && (
-                <span className="insight-tooltip" role="tooltip">
-                  <span className="insight-tooltip__head">
-                    <span className="insight-tooltip__icon" aria-hidden>
-                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M8 1.5v1M2.5 4 3.4 4.9M13.5 4l-.9.9M1.5 9h1M13.5 9h1M6 13h4M6.5 11h3" />
-                        <path d="M5 9a3 3 0 1 1 6 0c0 1-.5 1.5-1 2H6c-.5-.5-1-1-1-2Z" />
-                      </svg>
-                    </span>
-                    <span className="insight-tooltip__title">Insights</span>
-                  </span>
-                  <span className="insight-tooltip__body">{tooltip}</span>
-                </span>
-              )}
             </span>
           )}
         </span>
@@ -109,7 +91,7 @@ const StepCard = ({ index, title, subtitle, state = 'default' }) => {
 };
 
 /* ---------- Top crumb / chrome ---------------------------------- */
-const ProductCrumbs = ({ onNavigate, assetsOpen, onToggleAssets }) => (
+const ProductCrumbs = ({ onNavigate }) => (
   <div style={{
     display: 'flex', alignItems: 'center', gap: 8,
     height: 44, padding: '0 16px',
@@ -157,29 +139,16 @@ const ProductCrumbs = ({ onNavigate, assetsOpen, onToggleAssets }) => (
         width: 16, height: 16, borderRadius: '50%',
         background: '#000', color: '#fff', fontSize: 9, fontWeight: 700,
       }}>a</span>
-      Open live listing
+      Go to live
       <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
         <path d="M6 3h7v7M13 3 6 10M3 6v7h7"/>
       </svg>
     </button>
-    <button
-      type="button"
-      className="btn btn--ghost btn--sm"
-      onClick={onToggleAssets}
-      aria-pressed={!!assetsOpen}
-      aria-label={assetsOpen ? 'Collapse assets sidebar' : 'Open assets sidebar'}
-      title={assetsOpen ? 'Collapse assets' : 'Open assets'}
-      style={{
-        gap: 6,
-        color: assetsOpen ? 'var(--text-primary)' : 'var(--text-tertiary)',
-        background: assetsOpen ? 'var(--bg-secondary)' : undefined,
-      }}>
+    <button className="btn btn--ghost btn--sm" style={{ gap: 6, color: 'var(--text-tertiary)' }}>
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
-        {assetsOpen
-          ? <path d="m4 3 5 5-5 5M9 3l5 5-5 5" />
-          : <path d="M9 3 4 8l5 5M14 3l-5 5 5 5" />}
+        <path d="M9 3 4 8l5 5M14 3l-5 5 5 5"/>
       </svg>
-      {!assetsOpen && <span>Assets</span>}
+      Assets
     </button>
   </div>
 );
@@ -219,7 +188,7 @@ const ProductHeader = () => (
         { label: 'Retailer', value: 'Amazon US' },
         { label: 'ASIN',     value: 'B00DPZTJUI', mono: true },
         { label: 'Brand',    value: 'Post' },
-        { label: 'Category', value: 'Tabletop Synthesizers' },
+        { label: 'Category', value: 'Cereal' },
       ].map(m => (
         <div key={m.label} style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 80 }}>
           <span style={{
@@ -621,173 +590,12 @@ const ExtraSection = () => (
 );
 
 /* ---------- Page shell ------------------------------------------- */
-/* ---------- Assets sidebar -------------------------------------- */
-// Right-edge drawer triggered from the Assets button in the ProductCrumbs.
-// Tabs: Hero (just the hero image) | Carousel (everything after it).
-// Source filter: Imported / Spark / + Upload — Imported is the only one with
-// real fixtures behind it for the prototype.
-const SIDEBAR_W = 360;
-
-const SidebarAssetTile = ({ asset }) => {
-  const tier = (typeof scoreTier === 'function') ? scoreTier(asset.score) : 'mod';
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 }}>
-      <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-        {asset.label}
-      </div>
-      <div style={{
-        position: 'relative', aspectRatio: '1 / 1',
-        background: 'var(--bg-secondary)',
-        border: '1px solid var(--border-tertiary)',
-        overflow: 'hidden',
-      }}>
-        <PAThumb kind={asset.thumb} />
-      </div>
-      {asset.score != null ? (
-        <div className={`score-bar score-bar--${tier}`}>
-          <span className="score-bar__label">{asset.score}</span>
-          <div className="score-bar__track">
-            <div className="score-bar__fill" style={{ width: `${asset.score}%` }} />
-          </div>
-        </div>
-      ) : (
-        <div style={{ height: 12 }} />
-      )}
-    </div>
-  );
-};
-
-const AssetsSidebar = ({ onClose }) => {
-  const [tab, setTab] = React.useState('carousel');
-  const [source, setSource] = React.useState('imported');
-
-  const hero = HERO_CAROUSEL.filter(a => a.thumb === 'hero');
-  const carousel = HERO_CAROUSEL.filter(a => a.thumb !== 'hero');
-  // Spark/Upload are empty in this prototype — keep filter state visible.
-  const visible = source === 'imported' ? (tab === 'hero' ? hero : carousel) : [];
-
-  return (
-    <aside style={{
-      width: SIDEBAR_W, flexShrink: 0,
-      background: 'var(--bg-primary)',
-      borderLeft: '1px solid var(--border-secondary)',
-      display: 'flex', flexDirection: 'column',
-      position: 'sticky', top: 0,
-      alignSelf: 'flex-start',
-      height: '100vh',
-      overflowY: 'auto',
-    }}>
-      {/* Header */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '20px 20px 16px',
-      }}>
-        <div style={{
-          fontSize: 11, fontWeight: 600, letterSpacing: '0.08em',
-          textTransform: 'uppercase', color: 'var(--text-tertiary)',
-        }}>Assets</div>
-        <button
-          type="button"
-          className="btn btn--ghost btn--icon btn--sm"
-          onClick={onClose}
-          aria-label="Close assets sidebar"
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
-            <path d="m4 4 8 8M12 4l-8 8"/>
-          </svg>
-        </button>
-      </div>
-
-      {/* Tabs */}
-      <div className="tabs tabs--underline" role="tablist" style={{ padding: '0 20px' }}>
-        {[
-          { k: 'hero', label: 'Hero' },
-          { k: 'carousel', label: 'Carousel' },
-        ].map(t => (
-          <button
-            key={t.k}
-            role="tab"
-            aria-selected={tab === t.k}
-            className="tab"
-            onClick={() => setTab(t.k)}>
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Source toolbar */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        padding: '20px 20px 16px',
-      }}>
-        <button
-          type="button"
-          className="btn btn--secondary btn--sm"
-          onClick={() => setSource('imported')}
-          style={{
-            borderColor: source === 'imported' ? 'var(--text-primary)' : 'var(--border-secondary)',
-            color: source === 'imported' ? 'var(--text-primary)' : 'var(--text-secondary)',
-            fontWeight: source === 'imported' ? 600 : 500,
-          }}>
-          Imported
-        </button>
-        <button
-          type="button"
-          className="btn btn--ghost btn--sm"
-          onClick={() => setSource('spark')}
-          style={{
-            color: source === 'spark' ? 'var(--text-primary)' : 'var(--text-tertiary)',
-            fontWeight: source === 'spark' ? 600 : 500,
-          }}>
-          Spark
-        </button>
-        <span style={{ flex: 1 }} />
-        <button
-          type="button"
-          className="btn btn--secondary btn--sm"
-          style={{ gap: 6 }}>
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M8 3v10M3 8h10"/>
-          </svg>
-          Upload
-        </button>
-      </div>
-
-      {/* Asset grid */}
-      <div style={{
-        padding: '4px 20px 40px',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-        columnGap: 14, rowGap: 22,
-      }}>
-        {visible.length === 0 ? (
-          <div style={{
-            gridColumn: '1 / -1',
-            padding: '36px 0',
-            textAlign: 'center',
-            color: 'var(--text-quaternary)',
-            fontSize: 13,
-          }}>
-            {source === 'spark' ? 'No Spark generations yet.' : 'No assets uploaded yet.'}
-          </div>
-        ) : (
-          visible.map(a => <SidebarAssetTile key={a.id} asset={a} />)
-        )}
-      </div>
-    </aside>
-  );
-};
-
 function ProductPage({ route, onNavigate }) {
-  const [assetsOpen, setAssetsOpen] = React.useState(true);
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-primary)' }} data-screen-label="Product Page">
       <LeftRail route={route || '/library/product-pages'} onNavigate={onNavigate} />
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-        <ProductCrumbs
-          onNavigate={onNavigate}
-          assetsOpen={assetsOpen}
-          onToggleAssets={() => setAssetsOpen(o => !o)} />
+        <ProductCrumbs onNavigate={onNavigate} />
         <ProductHeader />
         <PerformanceMetrics />
         <OptimizationPlan />
@@ -795,9 +603,8 @@ function ProductPage({ route, onNavigate }) {
         <OptimalMixSection />
         <ExtraSection />
       </main>
-      {assetsOpen && <AssetsSidebar onClose={() => setAssetsOpen(false)} />}
     </div>
   );
 }
 
-Object.assign(window, { ProductPage, ScoreMetricCell, StrengthBolts });
+Object.assign(window, { ProductPage });

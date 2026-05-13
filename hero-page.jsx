@@ -85,7 +85,7 @@ const HeroHeader = ({ asset }) => {
 
   const meta = [
     { label: 'CLASS',    value: 'Hero' },
-    { label: 'CATEGORY', value: asset.category || 'Tabletop Synthesizers' }
+    { label: 'CATEGORY', value: asset.category || 'Cereal' }
   ];
 
   return (
@@ -110,7 +110,7 @@ const HeroHeader = ({ asset }) => {
             </span>
           </div>
           <div style={{ fontSize: 12, color: 'var(--text-tertiary)', maxWidth: 320, lineHeight: 1.4 }}>
-            This image scores higher than <strong style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>82% of images</strong> in the Tabletop Synthesizers category.
+            This image scores higher than <strong style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>82% of images</strong> in the Cold Cereal category.
           </div>
         </div>
       </div>

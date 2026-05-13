@@ -233,8 +233,6 @@ a { color: inherit; }
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-xs);
   box-shadow: var(--shadow-xs);
-  /* Match dropdown trigger sizing (FilterDropdown/FakeSelect use 13px). */
-  font-size: 13px;
   transition: border-color .15s, box-shadow .15s;
 }
 .input:hover { border-color: var(--brand-400); }
@@ -1071,72 +1069,6 @@ a { color: inherit; }
   opacity: 0.85;
 }
 .score-metric-cell__label-info svg { width: 12px; height: 12px; display: block; }
-
-/* --- Insight tooltip (hover/focus the info icon) --------------------- */
-.score-metric-cell__label-info.has-tooltip {
-  position: relative;
-  cursor: help;
-  opacity: 1;
-  outline: none;
-}
-.score-metric-cell__label-info.has-tooltip:hover,
-.score-metric-cell__label-info.has-tooltip:focus-visible {
-  color: var(--text-primary);
-}
-.insight-tooltip {
-  /* Sit inside the info-icon span so the hover target is the icon itself. */
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 8px);
-  transform: translateX(-50%) translateY(4px);
-  z-index: 40;
-  width: max-content;
-  max-width: 280px;
-  padding: 14px 16px 16px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-secondary);
-  box-shadow: var(--shadow-lg, 0 12px 32px rgba(0,0,0,0.12));
-  border-radius: var(--radius-xs);
-  text-align: left;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity .12s ease, transform .12s ease;
-}
-.score-metric-cell__label-info.has-tooltip:hover .insight-tooltip,
-.score-metric-cell__label-info.has-tooltip:focus-visible .insight-tooltip {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-.insight-tooltip__head {
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 8px;
-}
-.insight-tooltip__icon {
-  width: 22px; height: 22px;
-  display: inline-grid; place-items: center;
-  border: 1px solid var(--border-tertiary);
-  border-radius: 4px;
-  color: var(--text-secondary);
-  flex-shrink: 0;
-}
-.insight-tooltip__title {
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: 0;
-  text-transform: none;
-}
-.insight-tooltip__body {
-  display: block;
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.45;
-  color: var(--text-primary);
-  letter-spacing: 0;
-  text-transform: none;
-}
 
 .score-metric-cell__meta {
   display: inline-flex; align-items: center; gap: 3px;

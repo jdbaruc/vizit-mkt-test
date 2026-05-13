@@ -18,7 +18,7 @@ function HeroDetailsPage({ route, onNavigate }) {
     id: tile.id || id,
     file: tile.file || 'fruity_pebbles_hero.jpg',
     score: tile.score != null ? tile.score : 71,
-    category: tile.category || 'Tabletop Synthesizers',
+    category: tile.category || 'Cereal',
     placement: 'Carousel pos 1',
     thumb: tile.thumb,
     label: tile.label || 'Fruity PEBBLES cereal hero image'

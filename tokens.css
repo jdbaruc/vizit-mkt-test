@@ -249,9 +249,6 @@
   --font-sans:  'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-serif: 'Source Serif 4', ui-serif, Georgia, 'Times New Roman', serif;
   --font-mono:  'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-  /* Editorial display headers (Home/Reporting section titles, page H1s) →
-     resolves to Source Serif 4 via --font-serif. */
-  --font-display: var(--font-serif);
 
   /* ----- Font weights (from typography.ts) -------------------------- */
   --fw-light:    300;

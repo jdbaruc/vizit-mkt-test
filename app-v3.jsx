@@ -579,7 +579,7 @@ function CollectionsPage({ route, onNavigate }) {
           <div style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>
             {sorted.length} assets scored by category:
           </div>
-          <FilterChip label="" value="Tabletop Synthesizers" />
+          <FilterChip label="" value="Shaving Gels" />
           <FilterChip label="Image type" value="Carousel assets" />
           <TagFilter selected={activeTagFilters} onChange={setActiveTagFilters} />
 
@@ -633,14 +633,6 @@ function App() {
   }, []);
   const navigate = (r) => { window.location.hash = r; setRoute(r); };
 
-  // Reset scroll on route change so deep links / drill-ins always land at
-  // the page header rather than wherever the previous page was scrolled to.
-  // window.scrollTo here covers the window-scroll case; the inner <main>
-  // columns never scroll independently in this app.
-  useEffect_(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-  }, [route]);
-
   // Resolve the active page once, then wrap with the global StatusBar so
   // every route gets the footer for free.
   let page;
@@ -664,12 +656,6 @@ function App() {
     page = <LibraryPage route={route} onNavigate={navigate} />;
   } else if (route.startsWith('/home')) {
     page = <HomePage route={route} onNavigate={navigate} />;
-  } else if (route.startsWith('/analytics/impact')) {
-    page = <ImpactReportingPage route={route} onNavigate={navigate} />;
-  } else if (route.startsWith('/analytics/opportunity')) {
-    page = <OpportunityReportingPage route={route} onNavigate={navigate} />;
-  } else if (route.startsWith('/analytics')) {
-    page = <ReportingPage route={route} onNavigate={navigate} />;
   } else {
     page = <CollectionsPage route={route} onNavigate={navigate} />;
   }

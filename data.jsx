@@ -5,52 +5,6 @@
 // metadata, tags, and a CSS-painted thumbnail that stands in for the real
 // product shot.
 
-// =========================================================================
-// Centralized brand list — used by every Brand dropdown across the platform
-// (Library product-pages filter, Reporting filters, Impact row brands, etc).
-// Add or rename here, and all surfaces stay in sync.
-// =========================================================================
-const BRANDS = [
-  'Pale Blue',
-  'Operator',
-  'V23',
-  'Vessel',
-  'No Align',
-  'Secondhand',
-  'Quiet Room',
-  'Examine Archive',
-  'Whorl',
-  'Paper Weight',
-  'Thresh',
-  'Negative Space',
-  'Def Qlub',
-  'Teenage Engineering',
-];
-
-// =========================================================================
-// Centralized category list — used by every Category dropdown and field
-// across the platform (Library collection meta, Reporting filters, Product
-// page metadata, etc). Add or rename here, and all surfaces stay in sync.
-// =========================================================================
-const CATEGORIES = [
-  'Cell Phones & Accessories',
-  'MP3 & MP4 Players',
-  'Digital Voice Recorders',
-  'Tabletop Synthesizers',
-  'Portable Bluetooth Speakers',
-];
-
-// Deterministic per-category color so the colored "category pill" always
-// renders the same hue for the same category across the app.
-const CATEGORY_COLORS = {
-  'Cell Phones & Accessories':   '#3538CD', // indigo
-  'MP3 & MP4 Players':           '#6941C6', // purple
-  'Digital Voice Recorders':     '#B93815', // orange
-  'Tabletop Synthesizers':       '#067647', // green
-  'Portable Bluetooth Speakers': '#0E7490', // teal
-};
-const categoryColor = (name) => CATEGORY_COLORS[name] || '#4B5565';
-
 const USERS = {
   jb:  { initials: 'JB', name: 'Jordan Baruc',    color: '#202939' },
   ma:  { initials: 'MA', name: 'Mira Alonso',     color: '#6B3A9A' },
@@ -190,4 +144,4 @@ const TAGS = [
   { id: 's17', name: 'product-facts-panel',      color: '#4B5565', group: 'sys-hero', source: 'system', usage: 71,   updated: 'live', description: 'Ingredients, nutrition or regulatory panel' },
 ];
 
-Object.assign(window, { ASSETS, BRANDS, CATEGORIES, CATEGORY_COLORS, categoryColor, UPLOADS, USERS, TAG_DICTIONARY, TAG_GROUPS, TAG_SWATCHES, TAGS, scoreTier, relativeDate, dateBucket });
+Object.assign(window, { ASSETS, UPLOADS, USERS, TAG_DICTIONARY, TAG_GROUPS, TAG_SWATCHES, TAGS, scoreTier, relativeDate, dateBucket });
