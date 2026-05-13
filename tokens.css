@@ -1,0 +1,321 @@
+/* =========================================================================
+   Vizit Design System — Tokens
+   Source: vizit-v2-ui / packages/theme
+   Refresh: Inter (UI) · Source Serif 4 (editorial) · JetBrains Mono (data)
+   Ingested from: uploads/typography.ts (fontFamily / fontSize / fontWeight / letterSpacing)
+   ========================================================================= */
+
+/* ---------- Font faces ------------------------------------------------- */
+/* All three families ship self-hosted from /fonts. */
+
+/* JetBrains Mono — per-weight woff2 (brand-supplied) */
+@font-face { font-family: 'JetBrains Mono'; font-weight: 100; font-style: normal; font-display: swap; src: url('fonts/JetBrainsMono-Thin.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 100; font-style: italic; font-display: swap; src: url('fonts/JetBrainsMono-ThinItalic.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 200; font-style: normal; font-display: swap; src: url('fonts/JetBrainsMono-ExtraLight.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 200; font-style: italic; font-display: swap; src: url('fonts/JetBrainsMono-ExtraLightItalic.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 300; font-style: normal; font-display: swap; src: url('fonts/JetBrainsMono-Light.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 300; font-style: italic; font-display: swap; src: url('fonts/JetBrainsMono-LightItalic.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-style: normal; font-display: swap; src: url('fonts/JetBrainsMono-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-style: italic; font-display: swap; src: url('fonts/JetBrainsMono-Italic.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 500; font-style: normal; font-display: swap; src: url('fonts/JetBrainsMono-Medium.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 500; font-style: italic; font-display: swap; src: url('fonts/JetBrainsMono-MediumItalic.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 600; font-style: normal; font-display: swap; src: url('fonts/JetBrainsMono-SemiBold.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 600; font-style: italic; font-display: swap; src: url('fonts/JetBrainsMono-SemiBoldItalic.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 700; font-style: normal; font-display: swap; src: url('fonts/JetBrainsMono-Bold.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 700; font-style: italic; font-display: swap; src: url('fonts/JetBrainsMono-BoldItalic.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 800; font-style: normal; font-display: swap; src: url('fonts/JetBrainsMono-ExtraBold.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 800; font-style: italic; font-display: swap; src: url('fonts/JetBrainsMono-ExtraBoldItalic.woff2') format('woff2'); }
+
+/* Source Serif 4 — variable TTF */
+@font-face {
+  font-family: 'Source Serif 4';
+  font-weight: 200 900;
+  font-style: normal; font-display: swap;
+  src: url('fonts/SourceSerif4-VariableFont_opsz_wght.ttf') format('truetype-variations');
+}
+@font-face {
+  font-family: 'Source Serif 4';
+  font-weight: 200 900;
+  font-style: italic; font-display: swap;
+  src: url('fonts/SourceSerif4-Italic-VariableFont_opsz_wght.ttf') format('truetype-variations');
+}
+
+/* Inter — variable TTF */
+@font-face {
+  font-family: 'Inter';
+  font-weight: 100 900;
+  font-style: normal; font-display: swap;
+  src: url('fonts/Inter-VariableFont_opsz_wght.ttf') format('truetype-variations');
+}
+@font-face {
+  font-family: 'Inter';
+  font-weight: 100 900;
+  font-style: italic; font-display: swap;
+  src: url('fonts/Inter-Italic-VariableFont_opsz_wght.ttf') format('truetype-variations');
+}
+
+:root {
+  /* ----- Brand (slate / modern-gray) -------------------------------- */
+  --brand-25:  #FCFCFC;
+  --brand-50:  #F8F8FC;
+  --brand-100: #F5F5F6;
+  --brand-200: #E3E8EF;
+  --brand-300: #CDD5DF;
+  --brand-400: #9AA4B2;
+  --brand-500: #697586;
+  --brand-600: #4B5565;
+  --brand-700: #364152;
+  --brand-800: #202939;
+  --brand-900: #121926;
+  --brand-950: #0D121C;
+
+  /* ----- Indigo Blue (brand accent) -------------------------------- */
+  --indigo-25:  #F5F8FF;
+  --indigo-50:  #EEF4FF;
+  --indigo-100: #E0EAFF;
+  --indigo-200: #C7D7FE;
+  --indigo-300: #A4BCFD;
+  --indigo-400: #8098F9;
+  --indigo-500: #6172F3;
+  --indigo-600: #444CE7;
+  --indigo-700: #3538CD;
+  --indigo-800: #2D31A6;
+  --indigo-900: #2D3282;
+  --indigo-950: #1F235B;
+
+  /* ----- Gray utility ------------------------------------------------ */
+  --gray-50:  #F6F6F6;
+  --gray-100: #F0F0F0;
+  --gray-200: #E9EAEB;
+  --gray-300: #D5D7DA;
+  --gray-400: #A4A7AE;
+  --gray-500: #717680;
+  --gray-600: #535862;
+  --gray-700: #414651;
+  --gray-800: #252B37;
+  --gray-900: #181D27;
+
+  /* ----- Status ------------------------------------------------------ */
+  --success-50:  #ECFDF3;
+  --success-200: #ABEFC6;
+  --success-400: #47CD89;
+  --success-500: #17B26A;
+  --success-600: #079455;
+  --success-700: #067647;
+
+  --warning-50:  #FFFAEB;
+  --warning-200: #FEDF89;
+  --warning-400: #FDB022;
+  --warning-500: #F79009;
+  --warning-600: #DC6803;
+  --warning-700: #B54708;
+
+  --error-50:  #FEF3F2;
+  --error-200: #FECDCA;
+  --error-400: #F97066;
+  --error-500: #F04438;
+  --error-600: #D92D20;
+  --error-700: #B42318;
+  --error-900: #7A271A;
+
+  --yellow-200: #FEEE95;
+  --yellow-400: #FAC515;
+  --yellow-700: #A15C07;
+
+  /* Score ramp (very-low → very-high), maps to Vizit score model */
+  --score-vlow-50:  var(--error-50);
+  --score-vlow-600: var(--error-600);
+  --score-vlow-700: var(--error-700);
+  --score-low-50:   var(--error-50);
+  --score-low-600:  var(--error-600);
+  --score-mod-50:   var(--warning-50);
+  --score-mod-600:  var(--warning-600);
+  --score-mod-700:  var(--warning-700);
+  --score-high-50:  #F9FEE7;   /* green-yellow-50 */
+  --score-high-600: #71A30D;   /* green-yellow-600 */
+  --score-high-700: #567C0F;
+  --score-vhigh-50:  var(--success-50);
+  --score-vhigh-600: var(--success-600);
+  --score-vhigh-700: var(--success-700);
+
+  /* ----- Semantic surfaces ------------------------------------------ */
+  --bg-primary:          #FFFFFF;
+  --bg-primary-hover:    var(--gray-50);
+  --bg-primary-disabled: var(--gray-100);
+  --bg-secondary:        var(--gray-50);
+  --bg-secondary-hover:  var(--gray-100);
+  --bg-tertiary:         var(--gray-100);
+  --bg-quaternary:       var(--gray-200);
+  --bg-brand-solid:      var(--brand-600);   /* matches backgroundColor.ts */
+  --bg-brand-solid-hover:var(--brand-700);
+  --bg-brand-alt:        var(--brand-50);
+  --bg-brand-alt-light:  var(--brand-25);
+  --bg-overlay:          #0A0D12;
+
+  --text-primary:         var(--gray-900);
+  --text-secondary:       var(--gray-700);
+  --text-tertiary:        var(--gray-600);
+  --text-quaternary:      var(--gray-500);
+  --text-disabled:        var(--gray-400);
+  --text-placeholder:     var(--gray-500);
+  --text-on-brand:        #FFFFFF;
+  --text-brand-primary:   var(--brand-900);
+  --text-brand-secondary: var(--brand-700);
+  --text-brand-tertiary:  var(--brand-600);
+  --text-error:           var(--error-600);
+  --text-warning:         var(--warning-700);
+  --text-success:         var(--success-700);
+
+  /* ----- Foreground (fg-*) — role-based aliases ---------------------
+     Mirrors the @vizit/atoms color spec. Use these on icons + text in
+     app code; reach for raw ramps only when defining new fg-* roles.
+     Light-mode values are defined here on :root; dark-mode overrides
+     live under [data-theme="dark"] further below. */
+  --fg-primary:              var(--gray-900);              /* 900 */
+  --fg-secondary:            var(--gray-700);              /* 700 */
+  --fg-secondary-hover:      var(--gray-800);              /* 800 */
+  --fg-tertiary:             var(--gray-600);              /* 600 */
+  --fg-tertiary-hover:       var(--gray-700);              /* 700 */
+  --fg-quaternary:           var(--gray-400);              /* 400 */
+  --fg-quaternary-hover:     var(--gray-500);              /* 500 */
+  --fg-white:                #FFFFFF;
+  --fg-disabled:             var(--gray-400);              /* 400 */
+  --fg-disabled-subtle:      var(--gray-300);              /* 300 */
+  --fg-brand-primary:        var(--brand-600);             /* 600 */
+  --fg-brand-primary-alt:    var(--brand-600);             /* alias of fg-brand-primary in light mode */
+  --fg-brand-secondary:      var(--brand-500);             /* 500 */
+  --fg-brand-secondary-alt:  var(--brand-500);             /* alias of fg-brand-secondary in light mode */
+  --fg-brand-secondary-hover:var(--brand-600);             /* 600 */
+  --fg-error-primary:        var(--error-600);             /* 600 */
+  --fg-error-secondary:      var(--error-500);             /* 500 */
+  --fg-warning-primary:      var(--warning-600);           /* 600 */
+  --fg-warning-secondary:    var(--warning-500);           /* 500 */
+  --fg-success-primary:      var(--success-600);           /* 600 */
+  --fg-success-secondary:    var(--success-500);           /* 500 */
+
+  --border-primary:    var(--gray-300);
+  --border-secondary:  #E9EAEB;
+  --border-tertiary:   var(--gray-100);
+  --border-disabled:   var(--gray-200);
+  --border-error:      var(--error-600);
+  --border-success:    var(--success-400);
+  --border-warning:    var(--warning-600);
+  --border-brand:      var(--brand-500);
+
+  /* ----- Radius (sharp) --------------------------------------------- */
+  --radius-none: 0px;
+  --radius-xxs:  2px;
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:   10px;
+  --radius-xl:   12px;
+  --radius-2xl:  16px;
+  --radius-full: 9999px;
+
+  /* ----- Elevation -------------------------------------------------- */
+  --shadow-xs: 0px 1px 2px 0px rgba(10, 13, 18, 0.05);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.10);
+  --shadow-xl: 0 16px 24px rgba(0, 0, 0, 0.12);
+  --shadow-inset-primary: inset 0 -2px 0 0 rgba(10, 13, 18, 0.14), inset 0 0 0 1px rgba(10, 13, 18, 0.18);
+  --shadow-focus: 0 0 0 2px #fff, 0 0 0 4px var(--brand-600);
+
+  /* ----- Spacing (Tailwind-aligned 4px base, 2px ramp) -------------- */
+  --sp-0:  0;
+  --sp-1:  2px;
+  --sp-2:  4px;
+  --sp-3:  6px;
+  --sp-4:  8px;
+  --sp-5:  10px;
+  --sp-6:  12px;
+  --sp-8:  16px;
+  --sp-10: 20px;
+  --sp-12: 24px;
+  --sp-16: 32px;
+  --sp-20: 40px;
+  --sp-24: 48px;
+  --sp-32: 64px;
+  --sp-40: 80px;
+  --sp-48: 96px;
+  --sp-64: 128px;
+
+  /* ----- Type ------------------------------------------------------- */
+  /* Source of truth: uploads/typography.ts + Text component spec.
+     - sans  → Inter (UI: buttons, body, labels)
+     - serif → Source Serif 4 (editorial headers, e.g. Home/Explore section titles)
+     - mono  → JetBrains Mono (data numerals, captions, denominators) */
+  --font-sans:  'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Source Serif 4', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-mono:  'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* Editorial display headers (Home/Reporting section titles, page H1s) →
+     resolves to Source Serif 4 via --font-serif. */
+  --font-display: var(--font-serif);
+
+  /* ----- Font weights (from typography.ts) -------------------------- */
+  --fw-light:    300;
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* size / leading pairs */
+  --text-xxs:        10px;   --lh-xxs:        14px;
+  --text-xs:         12px;   --lh-xs:         18px;
+  --text-sm:         14px;   --lh-sm:         20px;
+  --text-md:         16px;   --lh-md:         24px;
+  --text-lg:         18px;   --lh-lg:         28px;
+  --text-xl:         20px;   --lh-xl:         30px;
+  --text-display-xs: 24px;   --lh-display-xs: 32px;
+  --text-display-sm: 30px;   --lh-display-sm: 38px;
+  --text-display-md: 36px;   --lh-display-md: 44px;
+  --text-display-lg: 48px;   --lh-display-lg: 60px;
+  --text-display-xl: 60px;   --lh-display-xl: 72px;
+  --text-display-2xl:72px;   --lh-display-2xl:90px;
+
+  --tracking-display-md:  -0.72px;
+  --tracking-display-lg:  -0.96px;
+  --tracking-display-xl:  -1.2px;
+  --tracking-display-2xl: -1.44px;
+  --tracking-label: 0.08em;
+
+  /* control heights */
+  --h-input-sm: 32px;
+  --h-input-md: 40px;
+  --h-input-lg: 48px;
+
+  /* layout */
+  --container: 1280px;
+  --side-rail: 240px;
+}
+
+/* =========================================================================
+   Dark mode overrides — fg-* roles
+   Apply by setting [data-theme="dark"] on a root container. Only the fg-*
+   family is themed today; bg/border families will follow when dark surfaces
+   are designed.
+   ========================================================================= */
+[data-theme="dark"] {
+  --fg-primary:              #FFFFFF;
+  --fg-secondary:            var(--gray-300);
+  --fg-secondary-hover:      var(--gray-200);
+  --fg-tertiary:             var(--gray-400);
+  --fg-tertiary-hover:       var(--gray-300);
+  --fg-quaternary:           var(--gray-600);
+  --fg-quaternary-hover:     var(--gray-500);
+  --fg-white:                #FFFFFF;
+  --fg-disabled:             var(--gray-500);
+  --fg-disabled-subtle:      var(--gray-600);
+  --fg-brand-primary:        var(--brand-500);
+  --fg-brand-primary-alt:    var(--gray-300);
+  --fg-brand-secondary:      var(--brand-500);
+  --fg-brand-secondary-alt:  var(--gray-600);
+  --fg-brand-secondary-hover:var(--gray-500);
+  --fg-error-primary:        var(--error-500);
+  --fg-error-secondary:      var(--error-400);
+  --fg-warning-primary:      var(--warning-500);
+  --fg-warning-secondary:    var(--warning-400);
+  --fg-success-primary:      var(--success-500);
+  --fg-success-secondary:    var(--success-400);
+}

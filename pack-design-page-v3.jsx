@@ -1,0 +1,850 @@
+// =========================================================================
+// Pack Design Page — /library/pack-designs/:id
+// =========================================================================
+// A pack-design audit room: at the top, a PDP-style header strip
+// (thumb · title · meta cluster of category / benchmark / product). Below,
+// a grid of pack-design candidate images, each with 5 component scores
+// rendered as ScoreMetricCells:
+//   Shelf visibility · Brand clarity · Pack hierarchy · Distinctiveness · Legibility
+//
+// One of the tiles is an upload slot so the user can drop additional
+// renders into the comparison without leaving the page.
+// =========================================================================
+
+const { useState: useStatePD } = React;
+
+(function () {
+
+/* ---------- Seed data ------------------------------------------------ */
+// Each design has a single visual identity; the 6 slots are angles of the
+// SAME pack — front, back, side, top, on-shelf, lifestyle. Slots can be
+// empty so the user sees what's still missing for a fair audit.
+const PACK_DESIGNS = [
+  {
+    id: 'pd01',
+    palette: 'coral',
+    tags: ['hero', 'PDP', 'A/B'],
+    overall: 78,
+    scores: { shelf: 82, brand: 88, hierarchy: 74, distinctive: 71, legibility: 76 },
+    slots: [
+      { label: '0°',   angle: 'front',     tags: ['hero', 'PDP'] },
+      { label: '180°', angle: 'back',      tags: ['nutrition'] },
+      { label: '90°',  angle: 'side',      tags: [] },
+      { label: 'Top',  angle: 'top',       tags: ['lid'] },
+      { label: 'Shelf', angle: 'shelf',    tags: ['in-store'] },
+      { label: 'Lifestyle', angle: null,   tags: [] },
+    ],
+  },
+  {
+    id: 'pd02',
+    palette: 'mono',
+    tags: ['minimal', 'in-store'],
+    overall: 64,
+    scores: { shelf: 58, brand: 72, hierarchy: 66, distinctive: 60, legibility: 64 },
+    slots: [
+      { label: '0°',   angle: 'front',     tags: ['hero'] },
+      { label: '180°', angle: 'back',      tags: [] },
+      { label: '90°',  angle: 'side',      tags: [] },
+      { label: 'Top',  angle: null,        tags: [] },
+      { label: 'Shelf', angle: 'shelf',    tags: ['in-store'] },
+      { label: 'Lifestyle', angle: null,   tags: [] },
+    ],
+  },
+  {
+    id: 'pd03',
+    palette: 'citrus',
+    tags: ['campaign', 'limited'],
+    overall: 86,
+    scores: { shelf: 91, brand: 84, hierarchy: 88, distinctive: 89, legibility: 82 },
+    slots: [
+      { label: '0°',   angle: 'front',     tags: ['hero', 'PDP', 'A/B'] },
+      { label: '180°', angle: 'back',      tags: ['nutrition'] },
+      { label: '90°',  angle: 'side',      tags: ['ingredients'] },
+      { label: 'Top',  angle: 'top',       tags: ['lid'] },
+      { label: 'Shelf', angle: 'shelf',    tags: ['in-store'] },
+      { label: 'Lifestyle', angle: 'lifestyle', tags: ['campaign'] },
+    ],
+  },
+  {
+    id: 'pd04',
+    palette: 'noir',
+    tags: ['draft'],
+    overall: 52,
+    scores: { shelf: 44, brand: 58, hierarchy: 56, distinctive: 62, legibility: 38 },
+    slots: [
+      { label: '0°',   angle: 'front',     tags: ['hero', 'draft'] },
+      { label: '180°', angle: null,        tags: [] },
+      { label: '90°',  angle: null,        tags: [] },
+      { label: 'Top',  angle: null,        tags: [] },
+      { label: 'Shelf', angle: 'shelf',    tags: [] },
+      { label: 'Lifestyle', angle: null,   tags: [] },
+    ],
+  },
+]
+
+/* ---------- Painted pack mocks (placeholder for real renders) -------- */
+// One palette per design — each angle reuses the same colors / lockup so
+// the 6 slots look like the SAME pack viewed from different sides.
+const PALETTES = {
+  coral:  { bg1: '#fde8e1', bg2: '#f7c0a8', pack1: '#ff7e5f', pack2: '#c8472a', ink: '#fff',     accent: '#fde047', shelf: '#f7c0a8' },
+  mono:   { bg1: '#f3eee2', bg2: '#e6dcc4', pack1: '#ece4d0', pack2: '#d6c79e', ink: '#2d2a1f', accent: '#736c55', shelf: '#e6dcc4' },
+  citrus: { bg1: '#fff7ed', bg2: '#fed7aa', pack1: '#f97316', pack2: '#c2410c', ink: '#fff',     accent: '#fde047', shelf: '#fed7aa' },
+  noir:   { bg1: '#1a1a1a', bg2: '#000000', pack1: '#2a2a2a', pack2: '#0a0a0a', ink: '#d4af37', accent: '#9a9a9a', shelf: '#1a1a1a' },
+};
+
+// Brand mark used on every angle so it reads as the same SKU.
+const BrandMark = ({ p, scale = 1 }) => (
+  <div style={{
+    color: p.ink, fontFamily: 'serif', fontStyle: 'italic',
+    fontSize: 18 * scale, letterSpacing: '-0.02em', lineHeight: 1,
+  }}>marlowe</div>
+);
+
+// Tiny lockup variant for backs / sides where the front face isn't shown.
+const BrandStrip = ({ p }) => (
+  <div style={{
+    width: '70%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+  }}>
+    <div style={{ color: p.ink, fontSize: 9, fontWeight: 700, letterSpacing: '.16em' }}>MARLOWE OAT</div>
+    <div style={{ height: 1, width: '50%', background: p.ink, opacity: 0.5 }} />
+  </div>
+);
+
+const PackAngles = {
+  // Front — hero face
+  front: (p) => (
+    <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(180deg, ${p.bg1} 0%, ${p.bg2} 100%)` }}>
+      <div style={{ position: 'absolute', left: '24%', top: '12%', width: '52%', height: '76%', background: `linear-gradient(180deg, ${p.pack1} 0%, ${p.pack2} 100%)`, boxShadow: '0 6px 18px rgba(0,0,0,0.18)' }} />
+      <div style={{ position: 'absolute', left: '50%', top: '34%', transform: 'translateX(-50%)' }}>
+        <BrandMark p={p} />
+      </div>
+      <div style={{ position: 'absolute', left: '50%', top: '58%', transform: 'translateX(-50%)', width: '36%', height: '24%', borderRadius: '50%', background: `radial-gradient(circle at 30% 30%, ${p.accent} 0%, ${p.pack2} 80%)` }} />
+    </div>
+  ),
+  // Back — nutrition / copy block, same colorway
+  back: (p) => (
+    <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(180deg, ${p.bg1} 0%, ${p.bg2} 100%)` }}>
+      <div style={{ position: 'absolute', left: '24%', top: '12%', width: '52%', height: '76%', background: `linear-gradient(180deg, ${p.pack1} 0%, ${p.pack2} 100%)` }} />
+      <div style={{ position: 'absolute', left: '32%', top: '20%', right: '32%', display: 'flex', justifyContent: 'center' }}>
+        <BrandStrip p={p} />
+      </div>
+      <div style={{ position: 'absolute', left: '32%', right: '32%', top: '38%', height: '46%', background: 'rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', gap: 3, padding: 8 }}>
+        {[0,1,2,3,4,5,6].map(i => (
+          <div key={i} style={{ height: 2, background: p.ink, opacity: 0.45, width: `${85 - (i % 3) * 12}%` }} />
+        ))}
+      </div>
+    </div>
+  ),
+  // Side — narrow panel, lockup vertical-ish
+  side: (p) => (
+    <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(180deg, ${p.bg1} 0%, ${p.bg2} 100%)` }}>
+      <div style={{ position: 'absolute', left: '38%', top: '12%', width: '24%', height: '76%', background: `linear-gradient(180deg, ${p.pack1} 0%, ${p.pack2} 100%)` }} />
+      <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%) rotate(-90deg)', whiteSpace: 'nowrap' }}>
+        <BrandMark p={p} scale={0.7} />
+      </div>
+    </div>
+  ),
+  // Top — looking down at the pack
+  top: (p) => (
+    <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(180deg, ${p.bg1} 0%, ${p.bg2} 100%)` }}>
+      <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%) perspective(120px) rotateX(55deg)', width: '60%', height: '60%', background: `linear-gradient(180deg, ${p.pack1} 0%, ${p.pack2} 100%)`, boxShadow: '0 8px 18px rgba(0,0,0,0.18)' }} />
+      <div style={{ position: 'absolute', left: '50%', top: '52%', transform: 'translate(-50%,-50%)' }}>
+        <BrandMark p={p} scale={0.7} />
+      </div>
+    </div>
+  ),
+  // On-shelf — the same pack repeated next to a couple of competitors
+  shelf: (p) => (
+    <div style={{ position: 'absolute', inset: 0, background: '#e9e7e2' }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: '14%', height: 2, background: '#bbb6a8' }} />
+      <div style={{ position: 'absolute', left: '8%', bottom: '16%', width: '20%', height: '60%', background: '#cfc8b4', border: '1px solid #aaa392' }} />
+      <div style={{ position: 'absolute', left: '32%', bottom: '16%', width: '20%', height: '60%', background: `linear-gradient(180deg, ${p.pack1} 0%, ${p.pack2} 100%)`, boxShadow: '0 4px 10px rgba(0,0,0,0.18)' }}>
+        <div style={{ position: 'absolute', left: '50%', top: '40%', transform: 'translateX(-50%)' }}>
+          <BrandMark p={p} scale={0.55} />
+        </div>
+      </div>
+      <div style={{ position: 'absolute', left: '54%', bottom: '16%', width: '20%', height: '60%', background: `linear-gradient(180deg, ${p.pack1} 0%, ${p.pack2} 100%)` }}>
+        <div style={{ position: 'absolute', left: '50%', top: '40%', transform: 'translateX(-50%)' }}>
+          <BrandMark p={p} scale={0.55} />
+        </div>
+      </div>
+      <div style={{ position: 'absolute', left: '76%', bottom: '16%', width: '18%', height: '60%', background: '#d8d2c0', border: '1px solid #aaa392' }} />
+    </div>
+  ),
+  // Lifestyle — pack on a kitchen surface, soft light
+  lifestyle: (p) => (
+    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, #f3ece1 0%, #d8c8a8 100%)' }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: '60%', bottom: 0, background: 'linear-gradient(180deg, #c8b78f 0%, #8a7048 100%)' }} />
+      <div style={{ position: 'absolute', left: '34%', top: '22%', width: '32%', height: '54%', background: `linear-gradient(180deg, ${p.pack1} 0%, ${p.pack2} 100%)`, boxShadow: '0 12px 22px rgba(0,0,0,0.28)' }}>
+        <div style={{ position: 'absolute', left: '50%', top: '38%', transform: 'translateX(-50%)' }}>
+          <BrandMark p={p} scale={0.65} />
+        </div>
+      </div>
+      <div style={{ position: 'absolute', left: '12%', bottom: '12%', width: '18%', height: '14%', borderRadius: '50%', background: 'rgba(0,0,0,0.18)', filter: 'blur(4px)' }} />
+    </div>
+  ),
+};
+
+const PackThumb = ({ palette, angle }) => {
+  const p = PALETTES[palette] || PALETTES.coral;
+  const Render = PackAngles[angle] || PackAngles.front;
+  return Render(p);
+};
+
+/* ---------- Header (matches PDP language) ---------------------------- */
+const PackDesignCrumbs = ({ onNavigate }) => (
+  <div style={{
+    display: 'flex', alignItems: 'center', gap: 8,
+    height: 44, padding: '0 16px',
+    borderBottom: '1px solid var(--border-secondary)',
+    background: 'var(--bg-primary)',
+  }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+      <button
+        type="button"
+        className="breadcrumb-btn"
+        onClick={() => onNavigate && onNavigate('/home')}
+        aria-label="Back to home"
+        onMouseEnter={(e) => e.currentTarget.classList.add('is-hover')}
+        onMouseLeave={(e) => e.currentTarget.classList.remove('is-hover')}
+      >
+        <span className="breadcrumb-btn__icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M2 7 8 2l6 5v7H2V7Z"/>
+          </svg>
+        </span>
+        <span className="breadcrumb-btn__chevron"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="m6 4 4 4-4 4"/></svg></span>
+      </button>
+      <button
+        type="button"
+        className="breadcrumb-btn"
+        onClick={() => onNavigate && onNavigate('/library')}
+        onMouseEnter={(e) => e.currentTarget.classList.add('is-hover')}
+        onMouseLeave={(e) => e.currentTarget.classList.remove('is-hover')}
+      >
+        <span className="breadcrumb-btn__label">Pack designs</span>
+        <span className="breadcrumb-btn__chevron"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="m6 4 4 4-4 4"/></svg></span>
+      </button>
+      <button
+        type="button"
+        className="breadcrumb-btn breadcrumb-btn--active"
+        onMouseEnter={(e) => e.currentTarget.classList.add('is-hover')}
+        onMouseLeave={(e) => e.currentTarget.classList.remove('is-hover')}
+      >
+        <span className="breadcrumb-btn__label" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 360 }}>
+          Marlowe Oat — Q4 redesign
+        </span>
+      </button>
+    </div>
+    <div style={{ flex: 1 }} />
+    <button className="btn btn--secondary btn--sm" style={{ gap: 6 }}>
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
+        <path d="M2 11v3h12v-3M8 1v9M5 7l3 3 3-3"/>
+      </svg>
+      Export report
+    </button>
+    <button className="btn btn--primary btn--sm" style={{ gap: 6 }}>
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <path d="M8 3v10M3 8h10"/>
+      </svg>
+      Upload designs
+    </button>
+  </div>
+);
+
+const PackDesignHeader = () => (
+  <div style={{
+    display: 'grid',
+    gridTemplateColumns: '40px 1fr auto',
+    alignItems: 'center', gap: 14,
+    padding: '8px 24px',
+    borderBottom: '1px solid var(--border-tertiary)',
+    background: 'var(--bg-primary)',
+  }}>
+    {/* Project thumb — abstract pack stack */}
+    <div style={{
+      width: 36, height: 36, position: 'relative', overflow: 'hidden',
+      background: '#f3eee2', border: '1px solid var(--border-tertiary)',
+    }}>
+      <div style={{ position: 'absolute', left: 6, top: 5, width: 12, height: 26, background: 'linear-gradient(180deg, #ff7e5f, #c8472a)' }} />
+      <div style={{ position: 'absolute', right: 6, top: 8, width: 10, height: 23, background: 'linear-gradient(180deg, #fde047, #ca8a04)' }} />
+    </div>
+
+    {/* Title + inline meta */}
+    <div style={{ minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 16, flexWrap: 'wrap' }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.005em', whiteSpace: 'nowrap' }}>
+        Marlowe Oat — Q4 carton redesign
+      </div>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, flexWrap: 'wrap', minWidth: 0 }}>
+        {[
+          { label: 'Category',  value: 'Plant-based milk' },
+          { label: 'Benchmark', value: 'Oatly Original' },
+          { label: 'Audience',  value: 'Millennial women, urban' },
+        ].map(m => (
+          <div key={m.label} style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            <span style={{ fontSize: 11, color: 'var(--text-quaternary)', letterSpacing: '.04em', textTransform: 'uppercase' }}>{m.label}</span>
+            <span style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 500, whiteSpace: 'nowrap' }}>{m.value}</span>
+          </div>
+        ))}
+        <span style={{ fontSize: 12, color: 'var(--text-quaternary)' }}>· 6 candidates · updated 2d ago</span>
+      </div>
+    </div>
+
+    {/* (action buttons removed) */}
+    <div />
+  </div>
+);
+
+/* ---------- Component-score list (vertical, sits to the right of slots) - */
+const ComponentList = ({ scores }) => {
+  const rows = [
+    { key: 'shelf',       label: 'Shelf visibility', sub: 'Standout against typical category permutations.' },
+    { key: 'brand',       label: 'Brand clarity',    sub: '"Who is this?" recognition at a glance.' },
+    { key: 'hierarchy',   label: 'Pack hierarchy',   sub: 'Eye flow lands on the key claim, not noise.' },
+    { key: 'distinctive', label: 'Distinctiveness',  sub: 'Differentiation in a sea of same.' },
+    { key: 'legibility',  label: 'Legibility',       sub: 'In-store and digital-shelf hero readability.' },
+  ];
+  const TIER_META = {
+    vlow:  { label: 'VERY LOW', tone: 'var(--error-500)',                          tint: 'var(--error-500)' },
+    low:   { label: 'LOW',      tone: 'var(--error-400, #f87171)',                  tint: 'var(--error-400, #f87171)' },
+    mod:   { label: 'MODERATE', tone: 'var(--yellow-500)',                          tint: 'var(--yellow-500)' },
+    high:  { label: 'HIGH',     tone: 'var(--score-high-500, #84cc16)',             tint: 'var(--score-high-500, #84cc16)' },
+    vhigh: { label: 'VERY HIGH',tone: 'var(--success-500)',                         tint: 'var(--success-500)' },
+    na:    { label: 'N/A',      tone: 'var(--gray-400)',                            tint: 'var(--gray-400)' },
+  };
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      {rows.map((r) => {
+        const v = scores[r.key];
+        const tier = scoreTier(v);
+        const meta = TIER_META[tier];
+        return (
+          <div key={r.key} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {/* Title */}
+            <div style={{
+              fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.005em',
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+            }}>
+              {r.label}
+              <span aria-hidden style={{ color: 'var(--text-quaternary)', display: 'inline-flex' }}>
+                <svg width="13" height="13" viewBox="0 0 12 12" fill="none">
+                  <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1" fill="none" />
+                  <circle cx="6" cy="3.5" r="0.6" fill="currentColor" />
+                  <path d="M6 5.5v3.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+                </svg>
+              </span>
+            </div>
+            {/* Subtitle */}
+            <div style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>{r.sub}</div>
+            {/* Tier label + slim bar, side-by-side */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
+              <div style={{
+                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                fontSize: 11, fontWeight: 600, letterSpacing: '.08em',
+                color: 'var(--text-primary)',
+                width: 72, flex: '0 0 auto',
+              }}>{meta.label}</div>
+              <div style={{
+                position: 'relative',
+                flex: 1,
+                height: 8,
+                background: 'var(--gray-100)',
+                overflow: 'hidden',
+              }}>
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  width: `${v}%`,
+                  background: `linear-gradient(90deg, color-mix(in oklch, ${meta.tint} 18%, white) 0%, ${meta.tint} 100%)`,
+                }} />
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+/* ---------- Hero + thumbnail strip (left half of each row) ----------- */
+// Big hero preview of the currently-selected pack image, with a 2-column
+// thumbnail strip alongside (5 remaining slots; the 6th is the hero).
+// Filled slots show a thumb; empty slots invite an upload.
+const SlotThumb = ({ slot, palette, active, size = 'sm' }) => {
+  const isHero = size === 'hero';
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, height: '100%' }}>
+      <div style={{
+        position: 'relative', flex: 1, minHeight: 0,
+        aspectRatio: isHero ? undefined : '1 / 1',
+        overflow: 'hidden',
+        background: slot.angle ? '#fff' : 'var(--bg-primary)',
+        border: slot.angle
+          ? (active ? '1.5px solid var(--text-primary)' : '1px solid var(--border-tertiary)')
+          : '1px dashed var(--border-secondary)',
+        cursor: 'pointer',
+        display: 'flex', flexDirection: 'column',
+      }}>
+        {slot.angle ? (
+          <PackThumb palette={palette} angle={slot.angle} />
+        ) : (
+          <div style={{
+            flex: 1, display: 'grid', placeItems: 'center',
+            color: 'var(--text-quaternary)',
+          }}>
+            <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+              <svg width={isHero ? 22 : 16} height={isHero ? 22 : 16} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M8 4v8M4 8h8"/>
+              </svg>
+              <span style={{ fontSize: isHero ? 12 : 10 }}>Add image</span>
+            </span>
+          </div>
+        )}
+      </div>
+      <div style={{
+        fontSize: 10, color: active ? 'var(--text-primary)' : 'var(--text-quaternary)',
+        fontWeight: active ? 600 : 400,
+        textTransform: 'uppercase', letterSpacing: '.06em',
+        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+      }}>{slot.label}</div>
+    </div>
+  );
+};
+
+const HeroAndThumbs = ({ slots, palette }) => {
+  // Pick first filled slot as hero, else first slot.
+  const heroIdx = Math.max(0, slots.findIndex(s => s.angle));
+  const hero = slots[heroIdx];
+  const rest = slots.filter((_, i) => i !== heroIdx);
+  return (
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.6fr)',
+      gap: 12,
+      padding: 12,
+      background: 'var(--bg-secondary)',
+      borderRight: '1px solid var(--border-tertiary)',
+    }}>
+      {/* 2-col thumbnail strip — left side */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gridAutoRows: '1fr',
+        gap: 8,
+        minWidth: 0,
+      }}>
+        {rest.map((s, i) => (
+          <SlotThumb key={i} slot={s} palette={palette} />
+        ))}
+      </div>
+
+      {/* Hero preview — right side */}
+      <SlotThumb slot={hero} palette={palette} active size="hero" />
+    </div>
+  );
+};
+
+/* ---------- One pack-design row ------------------------------------ */
+// Layout:
+//   ┌──────────────────────────────────────────────────────────────┐
+//   │ Header: name + note + sticker                                │
+//   ├──────────────────────────────┬───────────────────────────────┤
+//   │ Slot grid (3×2)              │ Component list (5 rows)       │
+//   └──────────────────────────────┴───────────────────────────────┘
+const PackDesignCard = ({ design }) => {
+  const tier = scoreTier(design.overall);
+  const filledCount = design.slots.filter(s => s.angle).length;
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column',
+      background: 'var(--bg-primary)',
+      border: '1px solid var(--border-tertiary)',
+    }}>
+      {/* Header strip */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr auto',
+        alignItems: 'center', gap: 16,
+        padding: '14px 16px',
+        borderBottom: '1px solid var(--border-tertiary)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0, flexWrap: 'wrap' }}>
+          <div className={`score-sticker score-sticker--lg score-sticker--${tier}`} aria-label={`Pack design score ${design.overall}`}>
+            <span className="score-sticker__num">{design.overall}</span>
+          </div>
+          <div style={{ minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 10 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-quaternary)', letterSpacing: '.04em', textTransform: 'uppercase' }}>Design</div>
+            <div style={{ fontSize: 12, color: filledCount < design.slots.length ? 'var(--text-warning-primary, var(--yellow-700))' : 'var(--text-tertiary)' }}>
+              {filledCount} of {design.slots.length} images
+            </div>
+          </div>
+          {/* Tag chips */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center', marginLeft: 4 }}>
+            {(design.tags || []).map(t => (
+              <span key={t} style={{
+                fontSize: 11, fontWeight: 500, lineHeight: 1,
+                color: 'var(--text-secondary)',
+                background: 'var(--bg-secondary)',
+                border: '1px solid var(--border-tertiary)',
+                padding: '4px 7px',
+                letterSpacing: '.02em',
+                whiteSpace: 'nowrap',
+              }}>{t}</span>
+            ))}
+            <button title="Add tag" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 3,
+              fontSize: 11, lineHeight: 1, font: 'inherit',
+              color: 'var(--text-tertiary)',
+              background: 'transparent',
+              border: '1px dashed var(--border-secondary)',
+              padding: '3px 6px',
+              cursor: 'pointer',
+            }}>
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6">
+                <path d="M6 2v8M2 6h8"/>
+              </svg>
+              tag
+            </button>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="btn btn--ghost btn--sm" style={{ gap: 4, color: 'var(--text-tertiary)' }}>
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
+              <path d="M8 11V3M5 6l3-3 3 3M2 11v3h12v-3"/>
+            </svg>
+            Add images
+          </button>
+        </div>
+      </div>
+
+      {/* Body: hero+thumbs | components */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 1fr)',
+      }}>
+        <HeroAndThumbs slots={design.slots} palette={design.palette} />
+        <ComponentList scores={design.scores} />
+      </div>
+    </div>
+  );
+};
+
+/* ---------- Empty new-design row ---------------------------------- */
+const NewDesignRow = () => (
+  <button style={{
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+    background: 'var(--bg-secondary)',
+    border: '1px dashed var(--border-secondary)',
+    cursor: 'pointer', font: 'inherit',
+    padding: '24px 16px',
+    color: 'var(--text-secondary)',
+  }}>
+    <span style={{
+      width: 28, height: 28,
+      background: 'var(--bg-primary)', border: '1px solid var(--border-secondary)',
+      display: 'grid', placeItems: 'center', color: 'var(--text-tertiary)',
+    }}>
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M8 3v10M3 8h10"/></svg>
+    </span>
+    <span style={{ fontSize: 13, fontWeight: 500 }}>Add a new design</span>
+    <span style={{ fontSize: 12, color: 'var(--text-quaternary)' }}>· 6 image slots per design</span>
+  </button>
+);
+
+/* ---------- v3: single-design focus view --------------------------- */
+// Big hero render of one design, with an angle-switcher thumbnail strip,
+// large component-score cards, and a candidate-comparison strip at the
+// bottom for switching between designs.
+
+const FocusedHero = ({ design, angleIdx, setAngleIdx }) => {
+  const slots = design.slots;
+  const heroSlot = slots[angleIdx] || slots[0];
+  const filledCount = slots.filter(s => s.angle).length;
+  const tier = scoreTier(design.overall);
+  return (
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 1fr)',
+      gap: 24,
+      padding: '24px 24px 0',
+    }}>
+      {/* Left: thumbs column + smaller hero */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '72px minmax(0, 1fr)',
+        gap: 12,
+        minWidth: 0,
+      }}>
+        {/* Vertical angle thumbnail strip — 6 stacked */}
+        <div style={{
+          display: 'grid',
+          gridTemplateRows: 'repeat(6, 1fr)',
+          gap: 8,
+        }}>
+          {slots.map((s, i) => (
+            <button key={i} onClick={() => setAngleIdx(i)} style={{
+              display: 'flex', flexDirection: 'column', gap: 2,
+              padding: 0, font: 'inherit', cursor: 'pointer',
+              background: 'transparent', border: 0, textAlign: 'center',
+              minWidth: 0,
+            }}>
+              <div style={{
+                aspectRatio: '1 / 1',
+                background: s.angle ? '#fff' : 'var(--bg-primary)',
+                border: i === angleIdx
+                  ? '1.5px solid var(--text-primary)'
+                  : (s.angle ? '1px solid var(--border-tertiary)' : '1px dashed var(--border-secondary)'),
+                overflow: 'hidden',
+                position: 'relative',
+              }}>
+                {s.angle ? (
+                  <PackThumb palette={design.palette} angle={s.angle} />
+                ) : (
+                  <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', color: 'var(--text-quaternary)' }}>
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
+                      <path d="M8 4v8M4 8h8"/>
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <div style={{
+                fontSize: 10, letterSpacing: '.06em', textTransform: 'uppercase',
+                color: i === angleIdx ? 'var(--text-primary)' : 'var(--text-quaternary)',
+                fontWeight: i === angleIdx ? 600 : 400,
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+              }}>{s.label}</div>
+            </button>
+          ))}
+        </div>
+
+        {/* Hero render — smaller now */}
+        <div style={{
+          position: 'relative',
+          aspectRatio: '1 / 1',
+          background: heroSlot.angle ? '#fff' : 'var(--bg-primary)',
+          border: heroSlot.angle ? '1px solid var(--border-tertiary)' : '1px dashed var(--border-secondary)',
+          overflow: 'hidden',
+        }}>
+          {heroSlot.angle ? (
+            <PackThumb palette={design.palette} angle={heroSlot.angle} />
+          ) : (
+            <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', color: 'var(--text-quaternary)' }}>
+              <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                <svg width="32" height="32" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
+                  <path d="M8 4v8M4 8h8"/>
+                </svg>
+                <span style={{ fontSize: 13 }}>Add image for this angle</span>
+              </span>
+            </div>
+          )}
+          {/* Top-left: angle label badge */}
+          <div style={{
+            position: 'absolute', top: 12, left: 12,
+            fontSize: 11, fontWeight: 600, letterSpacing: '.08em',
+            textTransform: 'uppercase',
+            color: heroSlot.angle ? '#fff' : 'var(--text-tertiary)',
+            background: heroSlot.angle ? 'rgba(0,0,0,0.55)' : 'var(--bg-secondary)',
+            padding: '5px 9px',
+          }}>{heroSlot.label}</div>
+        </div>
+      </div>
+
+      {/* Right: design meta + scores */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
+        {/* Header strip */}
+        <div style={{
+          display: 'flex', alignItems: 'flex-start', gap: 16,
+          paddingBottom: 16,
+          borderBottom: '1px solid var(--border-tertiary)',
+        }}>
+          <div className={`score-sticker score-sticker--lg score-sticker--${tier}`} aria-label={`Pack design score ${design.overall}`}>
+            <span className="score-sticker__num">{design.overall}</span>
+          </div>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-quaternary)', letterSpacing: '.04em', textTransform: 'uppercase' }}>Design</div>
+            <div style={{ fontFamily: 'var(--font-serif)', fontWeight: 400, fontSize: 22, color: 'var(--text-primary)', letterSpacing: '-0.005em', marginTop: 2 }}>
+              {design.id.toUpperCase()} · Marlowe Q4
+            </div>
+            <div style={{ fontSize: 12, color: filledCount < slots.length ? 'var(--text-warning-primary, var(--yellow-700))' : 'var(--text-tertiary)', marginTop: 4 }}>
+              {filledCount} of {slots.length} images uploaded
+            </div>
+            {/* Tags */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center', marginTop: 10 }}>
+              {(design.tags || []).map(t => (
+                <span key={t} style={{
+                  fontSize: 11, fontWeight: 500, lineHeight: 1,
+                  color: 'var(--text-secondary)',
+                  background: 'var(--bg-secondary)',
+                  border: '1px solid var(--border-tertiary)',
+                  padding: '4px 7px',
+                  letterSpacing: '.02em',
+                  whiteSpace: 'nowrap',
+                }}>{t}</span>
+              ))}
+              <button title="Add tag" style={{
+                display: 'inline-flex', alignItems: 'center', gap: 3,
+                fontSize: 11, lineHeight: 1, font: 'inherit',
+                color: 'var(--text-tertiary)',
+                background: 'transparent',
+                border: '1px dashed var(--border-secondary)',
+                padding: '3px 6px',
+                cursor: 'pointer',
+              }}>
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6">
+                  <path d="M6 2v8M2 6h8"/>
+                </svg>
+                tag
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Component scores */}
+        <ComponentList scores={design.scores} />
+      </div>
+    </div>
+  );
+};
+
+const ComparisonStrip = ({ designs, activeId, onSelect }) => {
+  return (
+    <div style={{
+      borderTop: '1px solid var(--border-tertiary)',
+      background: 'var(--bg-primary)',
+      marginTop: 32,
+    }}>
+      <div style={{
+        display: 'flex', alignItems: 'baseline', justifyContent: 'space-between',
+        padding: '12px 24px 6px',
+      }}>
+        <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--text-tertiary)' }}>
+          Compare candidates
+        </div>
+        <div style={{ fontSize: 12, color: 'var(--text-quaternary)' }}>
+          {designs.length} designs · click to focus
+        </div>
+      </div>
+      <div style={{
+        display: 'flex', gap: 12,
+        padding: '0 24px 16px',
+        overflowX: 'auto',
+      }}>
+        {designs.map(d => {
+          const tier = scoreTier(d.overall);
+          const isActive = d.id === activeId;
+          const heroSlot = d.slots.find(s => s.angle) || d.slots[0];
+          return (
+            <button key={d.id} onClick={() => onSelect(d.id)} style={{
+              flex: '0 0 auto',
+              display: 'flex', flexDirection: 'column', gap: 8,
+              padding: 8,
+              background: isActive ? 'var(--bg-secondary)' : 'transparent',
+              border: isActive ? '1.5px solid var(--text-primary)' : '1px solid var(--border-tertiary)',
+              cursor: 'pointer', font: 'inherit',
+              textAlign: 'left',
+              width: 168,
+            }}>
+              <div style={{
+                aspectRatio: '4 / 3',
+                background: heroSlot.angle ? '#fff' : 'var(--bg-primary)',
+                border: heroSlot.angle ? '1px solid var(--border-tertiary)' : '1px dashed var(--border-secondary)',
+                overflow: 'hidden',
+                position: 'relative',
+              }}>
+                {heroSlot.angle && <PackThumb palette={d.palette} angle={heroSlot.angle} />}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div className={`score-sticker score-sticker--sm score-sticker--${tier}`} aria-label={`Pack design score ${d.overall}`}>
+                  <span className="score-sticker__num">{d.overall}</span>
+                </div>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {d.id.toUpperCase()}
+                  </div>
+                  <div style={{ fontSize: 10, color: 'var(--text-quaternary)', letterSpacing: '.04em', textTransform: 'uppercase' }}>
+                    {d.slots.filter(s => s.angle).length}/{d.slots.length} imgs
+                  </div>
+                </div>
+              </div>
+            </button>
+          );
+        })}
+        {/* Add-design tile */}
+        <button style={{
+          flex: '0 0 auto',
+          display: 'flex', flexDirection: 'column', gap: 8,
+          padding: 8,
+          background: 'transparent',
+          border: '1px dashed var(--border-secondary)',
+          cursor: 'pointer', font: 'inherit',
+          textAlign: 'left',
+          width: 168,
+          color: 'var(--text-tertiary)',
+        }}>
+          <div style={{
+            aspectRatio: '4 / 3',
+            display: 'grid', placeItems: 'center',
+            color: 'var(--text-quaternary)',
+          }}>
+            <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
+              <path d="M8 3v10M3 8h10"/>
+            </svg>
+          </div>
+          <div style={{ fontSize: 12, fontWeight: 500 }}>Add a new design</div>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+/* ---------- Main page ------------------------------------------------ */
+function PackDesignPageV3({ route, onNavigate }) {
+  const [activeId, setActiveId] = useStatePD(PACK_DESIGNS[0].id);
+  const [angleIdx, setAngleIdx] = useStatePD(0);
+  const active = PACK_DESIGNS.find(d => d.id === activeId) || PACK_DESIGNS[0];
+
+  return (
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-secondary)' }}>
+      <LeftRail route={route} onNavigate={onNavigate} />
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }} data-screen-label="Pack design audit">
+        <PackDesignCrumbs onNavigate={onNavigate} />
+        <PackDesignHeader />
+
+        {/* Section header */}
+        <div style={{
+          display: 'flex', alignItems: 'baseline', justifyContent: 'space-between',
+          padding: '20px 24px 0',
+        }}>
+          <div>
+            <div style={{ fontFamily: 'var(--font-serif)', fontWeight: 400, fontSize: 22, color: 'var(--text-primary)', letterSpacing: '-0.005em' }}>
+              Design candidates
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginTop: 4 }}>
+              Each design is scored across five components: shelf visibility, brand clarity, pack hierarchy, distinctiveness, and legibility.
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          </div>
+        </div>
+
+        {/* Focused hero */}
+        <FocusedHero
+          design={active}
+          angleIdx={angleIdx}
+          setAngleIdx={setAngleIdx}
+        />
+
+        {/* Comparison strip — inline below content, not sticky */}
+        <ComparisonStrip
+          designs={PACK_DESIGNS}
+          activeId={activeId}
+          onSelect={(id) => { setActiveId(id); setAngleIdx(0); }}
+        />
+
+        <div style={{ flex: 1, minHeight: 32 }} />
+      </main>
+    </div>
+  );
+}
+
+Object.assign(window, { PackDesignPageV3: PackDesignPageV3 });
+})();
